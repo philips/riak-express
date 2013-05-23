@@ -1,0 +1,31 @@
+var express = require('express');
+var app = express();
+var db = require('riak-js').getClient();
+
+app.get('/post', function(req, res){
+  reply = function() {
+    var body = 'POSTED!';
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Length', body.length);
+    res.end(body);
+  }
+  var post = {
+    id: 17,
+    date: new Date(),
+    title: 'a blog post',
+    body: 'A blog post about Riak'
+  };
+  db.save('posts', post.id, post, reply);
+});
+
+app.get('/', function(req, res){
+  db.get('posts', 17, function(err, data, meta){
+    var body = JSON.stringify(data);
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Length', body.length);
+    res.end(body);
+  });
+});
+
+app.listen(3000);
+console.log('Listening on port 3000');
