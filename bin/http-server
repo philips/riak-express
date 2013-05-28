@@ -3,8 +3,12 @@ var app = express();
 var db = require('riak-js').getClient();
 
 app.get('/post', function(req, res){
-  reply = function() {
+  reply = function(err, data, meta) {
     var body = 'POSTED!';
+    if (err) {
+      console.log(err);
+      body = JSON.stringify(err);
+    }
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Length', body.length);
     res.end(body);
@@ -20,7 +24,13 @@ app.get('/post', function(req, res){
 
 app.get('/', function(req, res){
   db.get('posts', 17, function(err, data, meta){
-    var body = JSON.stringify(data);
+    var body;
+    if (err) {
+      console.log(err);
+      body = JSON.stringify(err);
+    } else {
+      body = JSON.stringify(data);
+    }
     res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Content-Length', body.length);
     res.end(body);
