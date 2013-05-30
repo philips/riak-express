@@ -13,7 +13,7 @@
     "http-server": "./bin/http-server"
   },
   "scripts": {
-    "start": "node ./bin/http-server",
+    "start": "sh -c '[ -e /var/run/etcd/EnvironmentFile ] && . /var/run/etcd/EnvironmentFile; node ./bin/http-server'",
     "predeploy": "echo This will be run before deploying the app",
     "postdeploy": "echo This will be run after deploying the app"
   },
