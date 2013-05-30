@@ -1,6 +1,10 @@
 var express = require('express');
 var app = express();
-var db = require('riak-js').getClient();
+var host = '127.0.0.1'
+if (process.env.RIAK_HOST) {
+  host = process.env.RIAK_HOST;
+}
+var db = require('riak-js').getClient({host: host});
 
 app.get('/post', function(req, res){
   reply = function(err, data, meta) {
