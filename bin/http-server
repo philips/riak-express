@@ -5,6 +5,7 @@ if (process.env.RIAK_HOST) {
   host = process.env.RIAK_HOST;
 }
 var db = require('riak-js').getClient({host: host});
+var visits = 0;
 
 app.get('/post', function(req, res) {
   reply = function(err, data, meta) {
@@ -27,18 +28,20 @@ app.get('/post', function(req, res) {
 });
 
 app.get('/', function(req, res) {
-  db.get('posts', 17, function(err, data, meta){
-    var body;
-    if (err) {
-      console.log(err);
-      body = JSON.stringify(err);
-    } else {
-      body = JSON.stringify(data);
+  res.setHeader('Content-Type', 'text/plain');
+
+  var cb = function(err, data, meta) {
+      if (err) {
+        console.log(err);
+        res.write(JSON.stringify(err));
+      } else {
+        res.write(JSON.stringify(data));
+      }
+      res.end("\nYou are visitor #" + ++visits);
     }
-    res.setHeader('Content-Type', 'text/plain');
-    res.setHeader('Content-Length', body.length);
-    res.end(body);
-  });
+
+  db.get('posts', 17, cb);
+
 });
 
 app.listen(3000);
